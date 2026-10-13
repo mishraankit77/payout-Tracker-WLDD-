@@ -1,0 +1,29 @@
+services:
+  mongo:
+    image: mongo:7
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    ports: ["27017:27017"]
+    volumes: ["mongo_data:/data/db", "./scripts/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro"]
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.adminCommand({ ping: 1 }).ok' | grep 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  backend:
+    build: ./backend
+    environment:
+      PORT: 4000
+      MONGODB_URI: mongodb://mongo:27017/memed?replicaSet=rs0
+      JWT_SECRET: local-docker-secret-change-me
+      FRONTEND_URL: http://localhost:3000
+    ports: ["4000:4000"]
+    depends_on:
+      mongo: { condition: service_healthy }
+  frontend:
+    build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:4000
+    ports: ["3000:3000"]
+    depends_on: [backend]
+volumes:
+  mongo_data:

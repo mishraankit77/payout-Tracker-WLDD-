@@ -1,0 +1,20 @@
+{
+  "name": "memed-campaign-payout-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "dev": "concurrently -k -n API,WEB -c green,blue \"pnpm --dir backend dev\" \"pnpm --dir frontend dev\"",
+    "dev:api": "pnpm --dir backend dev",
+    "dev:web": "pnpm --dir frontend dev",
+    "build": "pnpm --dir backend build && pnpm --dir frontend build",
+    "test": "pnpm --dir backend test"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "workspaces": [
+    "frontend",
+    "backend"
+  ]
+}
